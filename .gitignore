@@ -1,3 +1,5 @@
 secrets.json
 outputs/
 data/
+lightning_logs/
+__pycache__/

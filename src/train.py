@@ -117,7 +117,7 @@ def main(data_dir='data', output_dir='outputs', batch_size=4, epochs=25, lr=0.00
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    val_dataset = datasets.ImageFolder(os.path.join(data_dir, 'val'), val_transforms)
+    val_dataset = datasets.ImageFolder(os.path.join(data_dir, 'val'), train_transforms)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, num_workers=1)
 
     # build model
