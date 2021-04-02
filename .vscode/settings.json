@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\sethj\\.conda\\envs\\torch\\python.exe"
+    "python.pythonPath": "C:\\Users\\sethj\\.conda\\envs\\torch\\python.exe",
+    "ai.azureml.defaultWorkspaceId": "/subscriptions/91d27443-f037-45d9-bb0c-428256992df6/resourceGroups/robots/providers/Microsoft.MachineLearningServices/workspaces/hal"
 }
