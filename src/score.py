@@ -68,3 +68,8 @@ if __name__ == '__main__':
 
     print('---------------------Inference with paper:')
     print(json.dumps(run(json.dumps({'image': paper})), indent=4))
+
+    paper = 'http://localhost:8000/scissors.png'
+
+    print('---------------------Inference with scissors:')
+    print(json.dumps(run(json.dumps({'image': paper})), indent=4))

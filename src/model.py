@@ -1,6 +1,11 @@
+import os
+import json
 import torch
 import torch.nn as nn
+from typing import List
+from pathlib import Path
 import torch.optim as optim
+from datetime import datetime
 import pytorch_lightning as pl
 from torchvision import models
 import torch.nn.functional as F
@@ -8,10 +13,11 @@ import torch.nn.functional as F
 class RoshamboModel(pl.LightningModule):
     def __init__(self, classes: int, lr: float):
         super().__init__()
+        self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
         self.xfer = models.resnet18(pretrained=True)
-        self.fc1 = nn.Linear(1000, 256)
+        self.fc1 = nn.Linear(self.xfer.fc.out_features, 256)
         self.fc2 = nn.Linear(256, classes)
 
     def forward(self, x):
@@ -46,3 +52,18 @@ class RoshamboModel(pl.LightningModule):
         optimizer = optim.SGD(self.parameters(), lr=self.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
         return [optimizer], [scheduler]
+
+    def save(self, model_dir: str, classes: List[str]):
+        model_dir = Path(model_dir).resolve()
+        now = datetime.now()
+
+        if not model_dir.exists():
+            os.makedirs(str(model_dir))
+
+        full_path = model_dir / f'{now.strftime("%d.%b.%Y_%H.%M.%S")}'
+
+        with open(f'{str(full_path)}.json', 'w') as f:
+            f.write(json.dumps({ 'classes': classes }, indent=4))
+
+        self.to_onnx(f'{str(full_path)}.onnx', 
+                    torch.rand((1,3,224,224)), export_params=True)
