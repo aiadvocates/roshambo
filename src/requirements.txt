@@ -1,6 +1,0 @@
-numpy
-pillow
-requests
-torchvision
-onnxruntime
-azureml-defaults
