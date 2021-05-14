@@ -11,16 +11,16 @@ trainer:
   - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     init_args:
       monitor: val_acc
-      dirpath: ../outputs/checkpoints
+      dirpath: outputs/checkpoints
       filename: roshambo-{epoch:02d}-{val_acc:.2f}
       save_top_k: 3
       mode: min
-  default_root_dir: ../outputs
+  default_root_dir: outputs
   gpus: 1
 model:
   classes: 4
   lr: .01
 data:
-  data_dir: ../data/images
+  data_dir: data/images
   batch_size: 32
   train_split: 0.8

@@ -8,7 +8,7 @@
             "name": "PL Trainer",
             "type": "python",
             "request": "launch",
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}/ai",
             "program": "trainer.py",
             "args": ["--config", "config.yml"],
             "console": "integratedTerminal"
