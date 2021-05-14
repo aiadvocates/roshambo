@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "PL Trainer",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "program": "trainer.py",
+            "args": ["--config", "config.yml"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Run teh filez",
             "type": "python",
             "request": "launch",

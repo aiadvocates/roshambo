@@ -53,8 +53,7 @@ class RoshamboModel(pl.LightningModule):
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
         return [optimizer], [scheduler]
 
-    def save(self, model_dir: str, classes: List[str]):
-        model_dir = Path(model_dir).resolve()
+    def save(self, model_dir: Path, classes: List[str]):
         now = datetime.now()
 
         if not model_dir.exists():
