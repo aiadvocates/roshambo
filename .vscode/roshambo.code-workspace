@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "name": "roshambo",
+      "path": "../",
+    },
+    {
+      "name": "roshambo/ai",
+      "path": "../ai"
+    },
+    {
+      "name": "roshambo/web",
+      "path": "../web"
+    },
+  ],
+  "settings": {
+    
+  }
+}
