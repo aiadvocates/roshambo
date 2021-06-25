@@ -1,6 +1,8 @@
 
 export const Video = () => {
-  return <h1>HELLO VIDEO</h1>
+  return (
+    <video id="video" width="320" height="240" autoPlay={true}></video>
+  )
 }
 
 export default Video
