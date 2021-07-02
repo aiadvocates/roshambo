@@ -30,7 +30,7 @@ jobs:
           app_location: "web" # App source code path
           app_build_command: "yarn export"
           api_location: "api" # Api source code path - optional
-          output_location: "web/out" # Built app content directory - optional
+          output_location: "out" # Built app content directory - optional
 
           ###### End of Repository/Build Configurations ######
 
