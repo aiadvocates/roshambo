@@ -1,9 +1,24 @@
 import Head from "next/head";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Video from "~/components/Video";
 import DeviceSelector from "~/components/DeviceSelector";
 
+interface ApiResponise {
+  message: string
+}
+
 export default function Home() {
+  const [message, setMessage] = useState(null)
+
+  useEffect(() => {
+    (async() => {
+      const msg = await fetch('/api/message')
+      const json: ApiResponise = await msg.json()
+      setMessage(json.message)
+    })()
+  }, [])
+
   const selectDevice = (id: any) => {
     console.log(id);
   };
@@ -29,6 +44,7 @@ export default function Home() {
         <div>
           <video id="video" width="320" height="240" autoPlay={true} />
         </div>
+        <div className="text-3xl">{message}</div>
       </main>
 
       <footer className="flex items-center justify-center w-full h-24 border-t">
