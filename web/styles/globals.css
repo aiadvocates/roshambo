@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
+
+#video {
+  @apply border-gray-900;
+}
+
 @tailwind utilities;

@@ -4,7 +4,10 @@ import Video from "~/components/Video";
 import DeviceSelector from "~/components/DeviceSelector";
 
 export default function Home() {
-  const selectDevice = (id: any) => console.log(id);
+  const selectDevice = (id: any) => {
+    console.log(id);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
@@ -24,7 +27,7 @@ export default function Home() {
           <DeviceSelector onSelect={selectDevice} />
         </div>
         <div>
-          <Video />
+          <video id="video" width="320" height="240" autoPlay={true} />
         </div>
       </main>
 
