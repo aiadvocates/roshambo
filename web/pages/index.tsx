@@ -1,27 +1,25 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Video from "~/components/Video";
 import DeviceSelector from "~/components/DeviceSelector";
 
 interface ApiResponise {
-  message: string
+  message: string;
 }
 
 export default function Home() {
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
+  const [videoId, setVideoId] = useState<string>(null);
+  const [settings, setSettings] = useState<MediaTrackSettings>(null);
 
   useEffect(() => {
-    (async() => {
-      const msg = await fetch('/api/message')
-      const json: ApiResponise = await msg.json()
-      setMessage(json.message)
-    })()
-  }, [])
-
-  const selectDevice = (id: any) => {
-    console.log(id);
-  };
+    (async () => {
+      const msg = await fetch("/api/message");
+      const json: ApiResponise = await msg.json();
+      setMessage(json.message);
+    })();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -39,10 +37,17 @@ export default function Home() {
         </h1>
 
         <div className="mt-3 text-2xl">
-          <DeviceSelector onSelect={selectDevice} />
+          <div>
+            <DeviceSelector onSelect={setVideoId} />
+          </div>
+          <div className="mt-2">
+            <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
+              FREEZE
+            </button>
+          </div>
         </div>
-        <div>
-          <video id="video" width="320" height="240" autoPlay={true} />
+        <div className="mt-5">
+          <Video device={videoId} onVideoSet={setSettings} />
         </div>
         <div className="text-3xl">{message}</div>
       </main>

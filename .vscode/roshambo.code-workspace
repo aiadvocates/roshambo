@@ -9,12 +9,15 @@
       "path": "../ai"
     },
     {
+      "name": "roshambo/api",
+      "path": "../api"
+    },
+    {
       "name": "roshambo/web",
       "path": "../web"
     },
   ],
   "settings": {
     "debug.internalConsoleOptions": "neverOpen"
-    
   }
 }
