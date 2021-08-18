@@ -16,8 +16,8 @@ class RoshamboModel(pl.LightningModule):
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.xfer = models.resnet18(pretrained=True)
-        self.fc1 = nn.Linear(self.xfer.fc.out_features, 256)
+        self.xfer = models.resnet34(pretrained=True)
+        self.fc1 = nn.Linear(1000, 256)
         self.fc2 = nn.Linear(256, classes)
 
     def forward(self, x):
@@ -36,7 +36,6 @@ class RoshamboModel(pl.LightningModule):
         accuracy = torch.sum((preds == y).float()).item() / len(x)
 
         return loss, accuracy
-
 
     def training_step(self, batch, batch_idx):
         loss, acc = self.__compute(batch)
@@ -59,10 +58,8 @@ class RoshamboModel(pl.LightningModule):
         if not model_dir.exists():
             os.makedirs(str(model_dir))
 
-        full_path = model_dir / f'{now.strftime("%d.%b.%Y_%H.%M.%S")}'
-
-        with open(f'{str(full_path)}.json', 'w') as f:
+        with open(model_dir / 'meta.json', 'w') as f:
             f.write(json.dumps({ 'classes': classes }, indent=4))
 
-        self.to_onnx(f'{str(full_path)}.onnx', 
+        self.to_onnx(model_dir / 'model.onnx', 
                     torch.rand((1,3,224,224)), export_params=True)

@@ -19,7 +19,8 @@ class RoshamboDataModule(pl.LightningDataModule):
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                                 std=[0.229, 0.224, 0.225])
         ])
 
         self.raw_data = datasets.ImageFolder(self.data_dir, transform=self.transform)

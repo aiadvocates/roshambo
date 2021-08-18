@@ -1,4 +1,5 @@
 import mlflow
+import warnings
 from pathlib import Path
 from model import RoshamboModel
 from data import RoshamboDataModule
@@ -10,10 +11,12 @@ class RoshamboCLI(LightningCLI):
 
     def after_fit(self):
         print('Saving model!')
+        
         best_model = self.trainer.checkpoint_callback.best_model_path
         model = RoshamboModel.load_from_checkpoint(best_model)
         model_dir = Path(self.trainer.default_root_dir).resolve() / 'model'
         model.save(model_dir, self.datamodule.classes)
-
+        
 if __name__ == '__main__':
+    warnings.filterwarnings("ignore")
     RoshamboCLI(RoshamboModel, RoshamboDataModule)
