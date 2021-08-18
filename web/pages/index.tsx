@@ -21,6 +21,20 @@ export default function Home() {
     })();
   }, []);
 
+  const setFrame = (frame: ImageData) => {
+    (async () => {
+      const options: RequestInit = {
+        method: 'POST',
+        body: JSON.stringify({ "image" : Array.from(frame.data)}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      }
+      const response = await fetch("/api/predict", options)
+      console.log(response);
+    })();
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
@@ -40,14 +54,9 @@ export default function Home() {
           <div>
             <DeviceSelector onSelect={setVideoId} />
           </div>
-          <div className="mt-2">
-            <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
-              FREEZE
-            </button>
-          </div>
         </div>
         <div className="mt-5">
-          <Video device={videoId} onVideoSet={setSettings} />
+          <Video device={videoId} onVideoSet={setSettings} onFrameset={setFrame} />
         </div>
         <div className="text-3xl">{message}</div>
       </main>

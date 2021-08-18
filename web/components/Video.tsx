@@ -3,16 +3,18 @@ import { useEffect, useRef } from "react";
 interface Props {
   device: string;
   onVideoSet(settings: MediaTrackSettings): void;
+  onFrameset(frame: ImageData): void;
 }
 
-export const Video = ({ device, onVideoSet }: Props) => {
+export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
   const video = useRef<HTMLVideoElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
-  const handleVideoClick = (e) => {
+  const handleSubmit = () => {
     if(video.current && canvas.current) {
       const ctx = canvas.current.getContext('2d');
       ctx.drawImage(video.current, 0, 0, 320, 240);
+      onFrameset(ctx.getImageData(0, 0, 320, 240));
     }
   };
 
@@ -42,14 +44,17 @@ export const Video = ({ device, onVideoSet }: Props) => {
 
   return (
     <>
+      <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" onClick={handleSubmit}>
+        Submit
+      </button>
       <video
+        className="mt-3"
         ref={video}
         width="320"
         height="240"
         autoPlay={true}
-        onClick={handleVideoClick}
       ></video>
-      <canvas ref={canvas} width="320" height="240"></canvas>
+      <canvas className="mt-3" ref={canvas} width="320" height="240"></canvas>
     </>
   );
 };
