@@ -1,0 +1,6 @@
+.vscode/
+data/
+mlruns/
+outputs/
+notebooks/
+cloud/

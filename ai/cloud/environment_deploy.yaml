@@ -1,0 +1,8 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: pytorch-lightning-gpu-deploy
+version: 3
+tags:
+  pl_version: 1.4.2
+docker:
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.0.3-cudnn8-ubuntu18.04
+conda_file: file:conda_dependencies_deploy.yml
