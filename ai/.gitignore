@@ -4,3 +4,4 @@ data/
 lightning_logs/
 __pycache__/
 mlruns/
+.vscode/

@@ -3,11 +3,11 @@ trainer:
   callbacks:
   - class_path: pytorch_lightning.callbacks.EarlyStopping
     init_args:
-      monitor: val_acc
-      min_delta: 0.00
+      monitor: val_loss
+      min_delta: 0.0001
       patience: 5
-      verbose: False
-      mode: max
+      verbose: True
+      mode: min
   - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     init_args:
       monitor: val_acc
@@ -15,6 +15,9 @@ trainer:
       filename: roshambo-{epoch:02d}-{val_acc:.2f}
       save_top_k: 3
       mode: min
+  - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+    init_args:
+      logging_interval: 'step'
   default_root_dir: outputs
   gpus: 1
 model:

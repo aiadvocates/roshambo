@@ -16,8 +16,8 @@ class RoshamboModel(pl.LightningModule):
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.xfer = models.resnet18(pretrained=True)
-        self.fc1 = nn.Linear(self.xfer.fc.out_features, 256)
+        self.xfer = models.resnet34(pretrained=True)
+        self.fc1 = nn.Linear(1000, 256)
         self.fc2 = nn.Linear(256, classes)
 
     def forward(self, x):

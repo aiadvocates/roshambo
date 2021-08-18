@@ -55,56 +55,65 @@ def init():
     logger.info(f'transforms initialized')
     logger.info(f'init complete!')
 
-input = StandardPythonParameterType({
-  'image': StandardPythonParameterType("http://path/to/image")
-})
-outputs = StandardPythonParameterType({
-  'time': StandardPythonParameterType(0.157),
+@input_schema('image', StandardPythonParameterType("http://path/to/img"))
+@output_schema(StandardPythonParameterType({
+  'time': StandardPythonParameterType(0.060392),
   'prediction': StandardPythonParameterType("paper"),
   'scores': StandardPythonParameterType({
-    'none': StandardPythonParameterType(0.157),
-    'paper': StandardPythonParameterType(0.157),
-    'rock': StandardPythonParameterType(0.157),
-    'scissors': StandardPythonParameterType(0.157)
-  })
-})
-@input_schema('inputs', input)
-@output_schema(outputs)
-def run(inputs):
+    'none': StandardPythonParameterType(0.20599432),
+    'paper': StandardPythonParameterType(0.31392053),
+    'rock': StandardPythonParameterType(0.2621823),
+    'scissors': StandardPythonParameterType(0.21790285)
+  }),
+  'message': StandardPythonParameterType("Success!")
+}))
+def run(image):
     global session, transform, classes, input_name, logger
 
     print('starting inference clock')
     prev_time = time.time()
 
     # input data
-    print(f'loading post info {json.dumps(inputs)}')
+    print(f'loading image {image}')
+    try:
+        response = requests.get(image)
+        img = Image.open(BytesIO(response.content))
+        v = transform(img)
 
-    
-    image_url = inputs['image']
-    print(f'loading image {image_url}')
-    response = requests.get(image_url)
-    img = Image.open(BytesIO(response.content))
-    v = transform(img)
+        # predict with model
+        print('pre-prediction')
+        pred_onnx = session.run(None, {input_name: v.unsqueeze(0).numpy()})[0][0]
+        print('prediction complete')
 
-    # predict with model
-    print('pre-prediction')
-    pred_onnx = session.run(None, {input_name: v.unsqueeze(0).numpy()})[0][0]
-    print('prediction complete')
+        predictions = {}
+        for i in range(len(classes)):
+            predictions[classes[i]] = float(pred_onnx[i])
+
+        print('preparing payload')
+        payload = {
+            'time': float(0),
+            'prediction': classes[int(np.argmax(pred_onnx))],
+            'scores': predictions,
+            'message': 'Success!'
+        }
+
+    except Exception as e:
+        predictions = {}
+        for i in range(len(classes)):
+            predictions[classes[i]] = float(0)
+
+        print('preparing payload')
+        payload = {
+            'time': float(0),
+            'prediction': "none",
+            'scores': predictions,
+            'message': f'{e}'
+        }
 
     current_time = time.time()
     print('stopping clock')
     inference_time = datetime.timedelta(seconds=current_time - prev_time)
-
-    predictions = {}
-    for i in range(len(classes)):
-        predictions[classes[i]] = str(pred_onnx[i])
-
-    print('preparing payload')
-    payload = {
-        'time': str(inference_time.total_seconds()),
-        'prediction': classes[int(np.argmax(pred_onnx))],
-        'scores': predictions
-    }
+    payload['time'] = float(inference_time.total_seconds())
 
     print(f'payload: {json.dumps(payload)}')
     print('inference complete')
@@ -114,17 +123,13 @@ def run(inputs):
 
 if __name__ == '__main__':
     init()
-    rock = 'https://aiadvocate.z5.web.core.windows.net/rock.png'
+    def inf(uri, truth):
+        print(f'---->Inference with {truth}:')
+        o = run(uri)
+        print(json.dumps(o, indent=4))
+        print(f'---->End Inference with [{truth}] => [{o["prediction"]}]')
 
-    print('---------------------Inference with rock:')
-    print(json.dumps(run({'image': rock}), indent=4))
-
-    paper = 'https://aiadvocate.z5.web.core.windows.net/paper.png'
-
-    print('---------------------Inference with paper:')
-    print(json.dumps(run({'image': paper}), indent=4))
-
-    scissors = 'https://aiadvocate.z5.web.core.windows.net/scissors.png'
-
-    print('---------------------Inference with scissors:')
-    print(json.dumps(run({'image': paper}), indent=4))
+    inf('https://aiadvocate.z5.web.core.windows.net/rock.png', 'rock')
+    inf('https://aiadvocate.z5.web.core.windows.net/paper.png', 'paper')
+    inf('https://aiadvocate.z5.web.core.windows.net/scissors.png', 'scissors')
+    inf('bad_uri', 'Bad Uri')

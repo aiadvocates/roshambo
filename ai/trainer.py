@@ -1,4 +1,5 @@
 import mlflow
+import warnings
 from pathlib import Path
 from model import RoshamboModel
 from data import RoshamboDataModule
@@ -17,4 +18,5 @@ class RoshamboCLI(LightningCLI):
         model.save(model_dir, self.datamodule.classes)
         
 if __name__ == '__main__':
+    warnings.filterwarnings("ignore")
     RoshamboCLI(RoshamboModel, RoshamboDataModule)
