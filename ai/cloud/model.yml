@@ -1,0 +1,4 @@
+$schema: https://azuremlschemas.azureedge.net/latest/model.schema.json
+name: rps-model
+version: 2
+local_path: ../azureml_outputs/Run_13/outputs/outputs/model

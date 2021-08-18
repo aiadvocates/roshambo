@@ -37,7 +37,6 @@ class RoshamboModel(pl.LightningModule):
 
         return loss, accuracy
 
-
     def training_step(self, batch, batch_idx):
         loss, acc = self.__compute(batch)
         self.log('acc', acc, prog_bar=True)
@@ -59,10 +58,8 @@ class RoshamboModel(pl.LightningModule):
         if not model_dir.exists():
             os.makedirs(str(model_dir))
 
-        full_path = model_dir / f'{now.strftime("%d.%b.%Y_%H.%M.%S")}'
-
-        with open(f'{str(full_path)}.json', 'w') as f:
+        with open(model_dir / 'meta.json', 'w') as f:
             f.write(json.dumps({ 'classes': classes }, indent=4))
 
-        self.to_onnx(f'{str(full_path)}.onnx', 
+        self.to_onnx(model_dir / 'model.onnx', 
                     torch.rand((1,3,224,224)), export_params=True)

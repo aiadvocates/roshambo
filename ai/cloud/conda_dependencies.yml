@@ -1,0 +1,25 @@
+channels:
+- pytorch
+- anaconda
+- defaults
+- conda-forge
+dependencies:
+- python=3.8
+- 'pip>=21.0,<22'
+- matplotlib
+- pytorch
+- torchvision
+- torchaudio 
+- cudatoolkit=11.1
+- pip:
+  - azureml-core
+  - azureml-defaults
+  - azureml-mlflow
+  - azureml-telemetry
+  - azureml-train-core
+  - mlflow
+  - pandas
+  - pillow
+  - pytorch-lightning==1.4.2
+  - jsonargparse[signatures]
+  - timm==0.4.12
