@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
-experiment_name: rps-experiment
+experiment_name: roshambo
 code:
   local_path: ../
 command: python trainer.py --config config.yml --trainer.default_root_dir ./outputs --data.data_dir {inputs.training_data}
@@ -8,5 +8,5 @@ compute:
   target: azureml:gandalf
 inputs:
   training_data:
-    data: azureml:rps:1
+    data: azureml:roshambo:1
     mode: mount

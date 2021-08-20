@@ -1,4 +1,5 @@
 import math
+import torch
 from typing import Optional
 import pytorch_lightning as pl
 from torchvision import datasets, transforms
@@ -23,7 +24,15 @@ class RoshamboDataModule(pl.LightningDataModule):
                                  std=[0.229, 0.224, 0.225])
         ])
 
-        self.raw_data = datasets.ImageFolder(self.data_dir, transform=self.transform)
+        #torch.zeros(size, 3, dtype=torch.float).scatter_(1, y.view(-1, 1), 1)
+
+        self.target_transform = transforms.Compose([
+            transforms.Lambda(lambda y: torch.zeros(len(self.classes), dtype=torch.float).scatter_(0, torch.tensor(y), value=1))
+        ])
+
+        self.raw_data = datasets.ImageFolder(self.data_dir, 
+                                              transform=self.transform, 
+                                              target_transform=self.target_transform)
         self.classes = self.raw_data.classes
 
         sz = len(self.raw_data)

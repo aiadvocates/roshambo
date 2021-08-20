@@ -16,7 +16,7 @@ class RoshamboModel(pl.LightningModule):
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.xfer = models.resnet34(pretrained=True)
+        self.xfer = models.mobilenet.mobilenet_v3_large(pretrained=True)
         self.fc1 = nn.Linear(1000, 256)
         self.fc2 = nn.Linear(256, classes)
 
@@ -28,12 +28,14 @@ class RoshamboModel(pl.LightningModule):
     def __compute(self, batch):
         x, y = batch
         y_hat = self(x)
+        
         # loss
-        loss = F.cross_entropy(y_hat, y)
+        loss = F.binary_cross_entropy(y_hat, y)
 
         # accuracy
         _, preds = torch.max(y_hat, 1)
-        accuracy = torch.sum((preds == y).float()).item() / len(x)
+        _, truth = torch.max(y, 1)
+        accuracy = torch.sum((preds == truth).float()).item() / len(x)
 
         return loss, accuracy
 

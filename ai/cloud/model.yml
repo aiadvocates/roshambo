@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/model.schema.json
-name: rps-model
-version: 4
-local_path: ../outputs/model
+name: roshambo
+version: 1
+local_path: ../azureml_outputs/Run_2/outputs/outputs/model
 tags:
-  type: resnet50
+  type: resnet18

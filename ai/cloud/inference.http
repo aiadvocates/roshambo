@@ -7,4 +7,4 @@ POST https://{{endpoint}}/score HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{key}}
 
-{"image":"https://aiadvocate.z5.web.core.windows.net/rock.png"}
+{"image":"https://aiadvocate.z5.web.core.windows.net/scissors.png"}

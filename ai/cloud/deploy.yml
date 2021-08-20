@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
-name: rps-endpoint
+name: roshambo-endpoint
 type: online
 auth_mode: key
 traffic:
@@ -9,7 +9,7 @@ deployments:
   #blue deployment
   - name: blue
     app_insights_enabled: true
-    model: azureml:rps-model:4
+    model: azureml:roshambo:1
     code_configuration:
       code: 
         local_path: ../
