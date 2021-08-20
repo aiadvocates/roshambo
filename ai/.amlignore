@@ -1,0 +1,8 @@
+.vscode/
+data/
+mlruns/
+outputs/
+notebooks/
+cloud/
+azureml_outputs/
+__pycache__

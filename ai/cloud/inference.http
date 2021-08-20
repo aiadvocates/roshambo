@@ -1,0 +1,10 @@
+GET https://{{endpoint}}/swagger.json HTTP/1.1
+Authorization: Bearer {{key}}
+
+
+#####
+POST https://{{endpoint}}/score HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{key}}
+
+{"image":"https://aiadvocate.z5.web.core.windows.net/scissors.png"}
