@@ -11,10 +11,10 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   const handleSubmit = () => {
-    if(video.current && canvas.current) {
-      const ctx = canvas.current.getContext('2d');
-      ctx.drawImage(video.current, 0, 0, 320, 240);
-      onFrameset(ctx.getImageData(0, 0, 320, 240));
+    if (video.current && canvas.current) {
+      const ctx = canvas.current.getContext("2d");
+      ctx.drawImage(video.current, 0, 0, 224, 224);
+      onFrameset(ctx.getImageData(0, 0, 224, 224));
     }
   };
 
@@ -44,7 +44,10 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
 
   return (
     <>
-      <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" onClick={handleSubmit}>
+      <button
+        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+        onClick={handleSubmit}
+      >
         Submit
       </button>
       <video
@@ -54,7 +57,7 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
         height="240"
         autoPlay={true}
       ></video>
-      <canvas className="mt-3" ref={canvas} width="320" height="240"></canvas>
+      <canvas className="mt-3" ref={canvas} width="224" height="224"></canvas>
     </>
   );
 };

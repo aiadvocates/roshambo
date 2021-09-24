@@ -15,9 +15,9 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const msg = await fetch("/api/message");
-      const json: ApiResponise = await msg.json();
-      setMessage(json.message);
+      //const msg = await fetch("/api/message");
+      //const json: ApiResponise = await msg.json();
+      setMessage("we don't need this");
     })();
   }, []);
 
@@ -25,7 +25,11 @@ export default function Home() {
     (async () => {
       const options: RequestInit = {
         method: 'POST',
-        body: JSON.stringify({ "image" : Array.from(frame.data)}),
+        body: JSON.stringify({ 
+          "data": frame.data,
+          "width": frame.width,
+          "height": frame.height
+        }),
         headers: {
             'Content-Type': 'application/json'
         }

@@ -6,7 +6,6 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
 
 class RoshamboDataModule(pl.LightningDataModule):
-
     def __init__(self, data_dir: str = "path/to/dir", 
                        batch_size: int = 32,
                        train_split: float = .8):

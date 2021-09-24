@@ -20,6 +20,7 @@ trainer:
       logging_interval: 'step'
   default_root_dir: outputs
   gpus: 1
+  max_epochs: 100
 model:
   classes: 4
   lr: .01

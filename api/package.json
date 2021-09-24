@@ -10,6 +10,11 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
+    "@azure/static-web-apps-cli": "^0.7.2",
+    "@types/ndarray": "^1.0.10",
+    "@types/ndarray-ops": "^1.2.1",
+    "ndarray": "^1.0.19",
+    "ndarray-ops": "^1.2.2",
     "onnxruntime-node": "^1.8.0"
   },
   "devDependencies": {

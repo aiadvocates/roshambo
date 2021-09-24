@@ -1,6 +1,7 @@
 import os
 import json
 import torch
+import mlflow
 import torch.nn as nn
 from typing import List
 from pathlib import Path
@@ -13,17 +14,19 @@ import torch.nn.functional as F
 class RoshamboModel(pl.LightningModule):
     def __init__(self, classes: int, lr: float):
         super().__init__()
+        
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.xfer = models.mobilenet.mobilenet_v3_large(pretrained=True)
-        self.fc1 = nn.Linear(1000, 256)
-        self.fc2 = nn.Linear(256, classes)
+        self.model_type = "shufflenet_v2_x0_5"
+        self.xfer = models.shufflenet_v2_x0_5(pretrained=True)
+        self.fc1 = nn.Linear(1000, classes)
+
+        self.param_size = 0
 
     def forward(self, x):
         x = F.relu(self.xfer(x))
-        x = F.relu(self.fc1(x))
-        return F.softmax(self.fc2(x), dim=1)
+        return F.softmax(self.fc1(x), dim=1)
 
     def __compute(self, batch):
         x, y = batch
@@ -41,6 +44,7 @@ class RoshamboModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss, acc = self.__compute(batch)
+        self.log('loss', loss, prog_bar=True)
         self.log('acc', acc, prog_bar=True)
         return loss
 
@@ -53,15 +57,27 @@ class RoshamboModel(pl.LightningModule):
         optimizer = optim.SGD(self.parameters(), lr=self.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
         return [optimizer], [scheduler]
-
+        
     def save(self, model_dir: Path, classes: List[str]):
         now = datetime.now()
 
         if not model_dir.exists():
             os.makedirs(str(model_dir))
 
-        with open(model_dir / 'meta.json', 'w') as f:
-            f.write(json.dumps({ 'classes': classes }, indent=4))
-
         self.to_onnx(model_dir / 'model.onnx', 
-                    torch.rand((1,3,224,224)), export_params=True)
+                     torch.rand((1,3,224,224)), 
+                     export_params=True)
+
+        file_size = os.path.getsize(str(model_dir / 'model.onnx'))
+
+        param_size = sum(p.numel() for p in self.parameters())
+
+        with open(model_dir / 'meta.json', 'w') as f:
+            f.write(json.dumps({ 
+              'classes': classes,
+              'model': self.model_type,
+              'params': param_size,
+              'size': file_size
+            }, indent=4))
+
+        return (param_size, file_size)
