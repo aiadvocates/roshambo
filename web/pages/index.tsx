@@ -26,7 +26,7 @@ export default function Home() {
       const options: RequestInit = {
         method: 'POST',
         body: JSON.stringify({ 
-          "data": frame.data,
+          "data": Array.from(frame.data),
           "width": frame.width,
           "height": frame.height
         }),
@@ -34,8 +34,10 @@ export default function Home() {
             'Content-Type': 'application/json'
         }
       }
+      console.log(Array.from(frame.data))
       const response = await fetch("/api/predict", options)
-      console.log(response);
+      const data = await response.json()
+      console.log(data);
     })();
   }
 

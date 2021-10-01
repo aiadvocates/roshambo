@@ -2,15 +2,8 @@ import { Tensor } from "onnxruntime-node";
 import ndarray from "ndarray";
 import ops from "ndarray-ops";
 
-export interface ImageData {
-  data: Uint8ClampedArray,
-  height: number,
-  width: number
-}
-
-export const convertToTensor = ({data, height, width }: ImageData): Tensor => {
-  
-  const dataTensor = ndarray(new Float32Array(Array.from(data)), [width, height, 4]);
+export const convertToTensor = (data, height, width): Tensor => {
+  const dataTensor = ndarray(new Float32Array(data), [width, height, 4]);
   const dataProcessedTensor = ndarray(new Float32Array(width * height * 3), [
     1,
     3,
