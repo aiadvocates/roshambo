@@ -73,7 +73,7 @@ jobs:
     - name: Register Model
       id: register
       run: |
-        az ml job download --name $APP_NAME_$GITHUB_RUN_ID --outputs --download-path ./run
+        az ml job download --name $APP_NAME_$GITHUB_RUN_ID --download-path ./run
         mkdir model
         cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/model.onnx ./model/model.onnx
         cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/meta.json ./model/meta.json
@@ -113,7 +113,7 @@ jobs:
         else
             echo "endpoint exists"
         fi
-        
+
   deployment:
     needs: [endpoint, register]
     runs-on: ubuntu-latest

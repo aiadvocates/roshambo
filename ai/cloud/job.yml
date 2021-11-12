@@ -1,6 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 experiment_name: roshambo
-display_name: roshambo-job
 code: 
   local_path: ../
 command: >-

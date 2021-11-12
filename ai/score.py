@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import time
+import base64
 import logging
 import requests
 import datetime
@@ -14,11 +15,11 @@ from torchvision import transforms
 from inference_schema.schema_decorators import input_schema, output_schema
 from inference_schema.parameter_types.standard_py_parameter_type import StandardPythonParameterType
 
-session, transform, classes, input_name = None, None, None, None
+session, transform, classes, input_name, model_stamp = None, None, None, None, None
 logger = logging.getLogger()
 
 def init():
-    global session, transform, classes, input_name, logger
+    global session, transform, classes, input_name, logger, model_stamp
     logger.info('Attempting to load model artifacts')
 
     if 'AZUREML_MODEL_DIR' in os.environ:
@@ -40,6 +41,7 @@ def init():
     logger.info(f'metadata load complete: {model_meta}')
 
     classes = model_meta['classes']
+    model_stamp = model_meta['timestamp']
 
     logger.info('loading model')
     session = rt.InferenceSession(str(model_file))
@@ -55,7 +57,7 @@ def init():
     logger.info(f'transforms initialized')
     logger.info(f'init complete!')
 
-@input_schema('image', StandardPythonParameterType("http://path/to/img"))
+@input_schema('image', StandardPythonParameterType("https://aiadvocate.z5.web.core.windows.net/scissors.png"))
 @output_schema(StandardPythonParameterType({
   'time': StandardPythonParameterType(0.060392),
   'prediction': StandardPythonParameterType("paper"),
@@ -65,20 +67,33 @@ def init():
     'rock': StandardPythonParameterType(0.2621823),
     'scissors': StandardPythonParameterType(0.21790285)
   }),
+  'timestamp': StandardPythonParameterType(datetime.datetime.now().isoformat()),
+  'model_update': StandardPythonParameterType(datetime.datetime.now().isoformat()),
   'message': StandardPythonParameterType("Success!")
 }))
 def run(image):
-    global session, transform, classes, input_name, logger
+    global session, transform, classes, input_name, logger, model_stamp
 
     print('starting inference clock')
     prev_time = time.time()
 
-    # input data
-    print(f'loading image {image}')
+    # process data
     try:
-        response = requests.get(image)
-        img = Image.open(BytesIO(response.content))
-        v = transform(img)
+        if image.startswith('http'):
+            print(f'loading web image {image}')
+            response = requests.get(image)
+            img = Image.open(BytesIO(response.content))
+        elif image.startswith('data:image'):
+            data = image.split(",")
+            print(f'loading base64 image {data[0]}')
+            b64image = base64.b64decode(data[1])
+            img = Image.open(BytesIO(b64image))
+        else:
+            print(f'loading base64 image')
+            b64image = base64.b64decode(image)
+            img = Image.open(BytesIO(b64image))
+
+        v = transform(img.convert('RGB'))
 
         # predict with model
         print('pre-prediction')
@@ -94,6 +109,8 @@ def run(image):
             'time': float(0),
             'prediction': classes[int(np.argmax(pred_onnx))],
             'scores': predictions,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'model_update': model_stamp,
             'message': 'Success!'
         }
 
@@ -107,6 +124,8 @@ def run(image):
             'time': float(0),
             'prediction': "none",
             'scores': predictions,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'model_update': model_stamp,
             'message': f'{e}'
         }
 
@@ -131,5 +150,14 @@ if __name__ == '__main__':
 
     inf('https://aiadvocate.z5.web.core.windows.net/rock.png', 'rock')
     inf('https://aiadvocate.z5.web.core.windows.net/paper.png', 'paper')
-    inf('https://aiadvocate.z5.web.core.windows.net/scissors.png', 'scissors')
+    inf('https://aiadvocate.z5.web.core.windows.net/scissors.png', 'scissors')   
     inf('bad_uri', 'Bad Uri')
+
+    with open('testimage.txt', 'r') as f:
+        img = f.read()
+        inf(img, 'rock')
+
+
+    with open('fullimage.txt', 'r') as f:
+        img = f.read()
+        inf(img, 'none')
