@@ -24,3 +24,4 @@ if __name__ == '__main__':
     mlflow.pytorch.autolog()
     with mlflow.start_run() as run:
       cli = RoshamboCLI(RoshamboModel, RoshamboDataModule)
+      

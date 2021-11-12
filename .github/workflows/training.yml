@@ -77,7 +77,8 @@ jobs:
         mkdir model
         cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/model.onnx ./model/model.onnx
         cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/meta.json ./model/meta.json
-        LAST_MODEL_VER=$(az ml model show -n $APP_NAME-model --query version | tr -d "\r")
+        
+        LAST_MODEL_VER=$(az ml model list -n $APP_NAME-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
         az ml model create --name $APP_NAME-model --local-path ./model --version $((LAST_MODEL_VER+1))
 
   endpoint:
@@ -141,7 +142,7 @@ jobs:
           az config set defaults.group=${{secrets.AML_RG}}
     - name: Add Deployment
       run: |
-        LATEST_MODEL_VERSION=$(az ml model show -n $APP_NAME-model -o tsv --query version)
+        LATEST_MODEL_VERSION=$(az ml model list -n $APP_NAME-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
         MODEL_REF=azureml:$APP_NAME-model:$LATEST_MODEL_VERSION
 
         echo $MODEL_REF

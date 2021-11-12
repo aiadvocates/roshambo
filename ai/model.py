@@ -77,7 +77,8 @@ class RoshamboModel(pl.LightningModule):
               'classes': classes,
               'model': self.model_type,
               'params': param_size,
-              'size': file_size
+              'size': file_size,
+              'timestamp': datetime.now().isoformat()
             }, indent=4))
 
         return (param_size, file_size)

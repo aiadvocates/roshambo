@@ -4,7 +4,19 @@ import Image from "next/image";
 import Video from "~/components/Video";
 import DeviceSelector from "~/components/DeviceSelector";
 
-interface ApiResponise {
+interface Scores {
+  none: number;
+  paper: number;
+  rock: number;
+  scissors: number;
+}
+
+interface Prediction {
+  time: number;
+  prediction: string;
+  scores: Scores;
+  timestamp: string;
+  model_update: string;
   message: string;
 }
 
@@ -12,6 +24,7 @@ export default function Home() {
   const [message, setMessage] = useState(null);
   const [videoId, setVideoId] = useState<string>(null);
   const [settings, setSettings] = useState<MediaTrackSettings>(null);
+  const [prediction, setPrediction] = useState<Prediction | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,25 +34,24 @@ export default function Home() {
     })();
   }, []);
 
-  const setFrame = (frame: ImageData) => {
+
+  const setFrame = (frame: string) => {
     (async () => {
       const options: RequestInit = {
-        method: 'POST',
-        body: JSON.stringify({ 
-          "data": Array.from(frame.data),
-          "width": frame.width,
-          "height": frame.height
-        }),
+        method: "POST",
+        body: JSON.stringify({ image: frame }),
         headers: {
-            'Content-Type': 'application/json'
-        }
-      }
-      console.log(Array.from(frame.data))
-      const response = await fetch("/api/predict", options)
-      const data = await response.json()
-      console.log(data);
+          "Content-Type": "application/json",
+        },
+      };
+
+      const response = await fetch("/api/predict", options);
+      const pred: Prediction = await response.json();
+      console.log(pred);
+      setPrediction(pred);
     })();
-  }
+  };
+  const handleSubmit = () => {};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -61,10 +73,38 @@ export default function Home() {
             <DeviceSelector onSelect={setVideoId} />
           </div>
         </div>
-        <div className="mt-5">
-          <Video device={videoId} onVideoSet={setSettings} onFrameset={setFrame} />
+        <div className="flex-row max-w-screen-lg mx-auto mt-5 flex-nowrap">
+          <div className="flex mb-12">
+            <Video
+              device={videoId}
+              onVideoSet={setSettings}
+              onFrameset={setFrame}
+            />
+          </div>
+          <div className="flex">
+            <canvas
+              ref={canvas}
+              className="mt-3 border border-gray-500 border-solid"
+              width="320"
+              height="240"
+            ></canvas>
+          </div>
         </div>
-        <div className="text-3xl">{message}</div>
+        <div>
+          <button
+            className="invisible px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+            onClick={handleSubmit}
+          ></button>
+        </div>
+        <div className="text-3xl">
+          <div>{prediction?.prediction}</div>
+          <ul>
+            <li>none: {prediction?.scores.none}</li>
+            <li>paper: {prediction?.scores.paper}</li>
+            <li>rock: {prediction?.scores.rock}</li>
+            <li>scissors: {prediction?.scores.scissors}</li>
+          </ul>
+        </div>
       </main>
 
       <footer className="flex items-center justify-center w-full h-24 border-t">
