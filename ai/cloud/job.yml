@@ -14,3 +14,4 @@ inputs:
   training_data:
     data: azureml:roshambo:1
     mode: mount
+    
