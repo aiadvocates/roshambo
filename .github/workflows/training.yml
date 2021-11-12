@@ -145,7 +145,7 @@ jobs:
         MODEL_REF=azureml:$APP_NAME-model:$LATEST_MODEL_VERSION
 
         echo $MODEL_REF
-        az ml online-deployment create --name $APP_NAME-$GITHUB_RUN_ID --endpoint $APP_NAME-endpoint -f ./ai/cloud.deployment --set model=$MODEL_REF
+        az ml online-deployment create --name $APP_NAME-$GITHUB_RUN_ID --endpoint $APP_NAME-endpoint -f ./ai/cloud/deployment.yml --set model=$MODEL_REF
 
         # if PROD does not exist, mark this as prod and exit
         PROD_DEPLOYMENT=$(az ml online-endpoint show -n $APP_NAME-endpoint -o tsv --query "tags.PROD_DEPLOYMENT")
