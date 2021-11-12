@@ -1,0 +1,158 @@
+name: Roshambo CI/CD
+
+on:
+  workflow_dispatch:
+         
+  push:
+    branches:
+      - main
+    paths:
+      - ./ai/'**.py'
+      - ./ai/'**.yml'
+      - ./ai/'**.yaml'
+
+env:
+  APP_NAME: roshambo
+
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.3
+
+    - name: Setup Python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.7
+
+    - name: add az ml extension
+      run: |
+        az extension add -n ml -y
+
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_TOKEN}}
+
+    - name: set aml defaults
+      run: |
+          az config set defaults.workspace=${{secrets.AML_WORKSPACE}}
+          az config set defaults.group=${{secrets.AML_RG}}
+
+    - name: Run Job
+      run: |
+          az ml job create --file ./ai/cloud/job.yml --name $APP_NAME_$GITHUB_RUN_ID --stream 
+
+  register:
+    needs: [experiment]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.3
+
+    - name: Setup Python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.7
+
+    - name: add az ml extension
+      run: |
+        az extension add -n ml -y
+
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_TOKEN}}
+
+    - name: set aml defaults
+      run: |
+          az config set defaults.workspace=${{secrets.AML_WORKSPACE}}
+          az config set defaults.group=${{secrets.AML_RG}}
+    - name: Register Model
+      id: register
+      run: |
+        az ml job download --name $APP_NAME_$GITHUB_RUN_ID --outputs --download-path ./run
+        mkdir model
+        cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/model.onnx ./model/model.onnx
+        cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/meta.json ./model/meta.json
+        LAST_MODEL_VER=$(az ml model show -n $APP_NAME-model --query version | tr -d "\r")
+        az ml model create --name $APP_NAME-model --local-path ./model --version $((LAST_MODEL_VER+1))
+
+  endpoint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.3
+
+    - name: Setup Python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.7
+
+    - name: add az ml extension
+      run: |
+        az extension add -n ml -y
+
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_TOKEN}}
+
+    - name: set aml defaults
+      run: |
+          az config set defaults.workspace=${{secrets.AML_WORKSPACE}}
+          az config set defaults.group=${{secrets.AML_RG}}
+    - id: deployments
+      name: check endpoint
+      run: |
+        ENDPOINT_EXISTS=$(az ml endpoint list -o tsv --query "[?name=='$APP_NAME-endpoint'][name]" | wc -l)
+        if [[ ENDPOINT_EXISTS -ne 1 ]]; then
+            az ml endpoint create -n $APP_NAME-endpoint -f ./ai/cloud/endpoint.yml
+        else
+            echo "endpoint exists"
+        fi
+
+  deployment:
+    needs: [endpoint, register]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.3
+
+    - name: Setup Python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.7
+
+    - name: add az ml extension
+      run: |
+        az extension add -n ml -y
+
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_TOKEN}}
+
+    - name: set aml defaults
+      run: |
+          az config set defaults.workspace=${{secrets.AML_WORKSPACE}}
+          az config set defaults.group=${{secrets.AML_RG}}
+    - name: Add Deployment
+      run: |
+        LATEST_MODEL_VERSION=$(az ml model show -n $APP_NAME-model -o tsv --query version)
+        MODEL_REF=azureml:$APP_NAME-model:$LATEST_MODEL_VERSION
+
+        echo $MODEL_REF
+        az ml online-deployment create --name $APP_NAME-$GITHUB_RUN_ID --endpoint $APP_NAME-endpoint -f ./ai/cloud.deployment --set model=$MODEL_REF
+
+        # if PROD does not exist, mark this as prod and exit
+        PROD_DEPLOYMENT=$(az ml online-endpoint show -n $APP_NAME-endpoint -o tsv --query "tags.PROD_DEPLOYMENT")
+        if [[ -z "$PROD_DEPLOYMENT" ]]; then
+            # tag the current deployment as prod and set traffic to 100%
+            az ml online-endpoint update --name $APP_NAME-endpoint --traffic "$APP_NAME-$GITHUB_RUN_ID=100" --set tags.PROD_DEPLOYMENT=$APP_NAME_$GITHUB_RUN_ID
+        else
+            # modify traffic to siphon 10% to new deployment
+            az ml online-endpoint update -n $APP_NAME-endpoint --traffic "$PROD_DEPLOYMENT=90 $APP_NAME-$GITHUB_RUN_ID=10"    
+        fi
