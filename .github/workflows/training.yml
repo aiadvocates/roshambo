@@ -107,13 +107,13 @@ jobs:
     - id: deployments
       name: check endpoint
       run: |
-        ENDPOINT_EXISTS=$(az ml endpoint list -o tsv --query "[?name=='$APP_NAME-endpoint'][name]" | wc -l)
+        ENDPOINT_EXISTS=$(az ml online-endpoint list -o tsv --query "[?name=='$APP_NAME-endpoint'][name]" |  wc -l)
         if [[ ENDPOINT_EXISTS -ne 1 ]]; then
-            az ml endpoint create -n $APP_NAME-endpoint -f ./ai/cloud/endpoint.yml
+            az ml online-endpoint create -n $APP_NAME-endpoint -f ./ai/cloud/endpoint.yml    
         else
             echo "endpoint exists"
         fi
-
+        
   deployment:
     needs: [endpoint, register]
     runs-on: ubuntu-latest
