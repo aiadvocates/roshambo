@@ -7,9 +7,9 @@ on:
     branches:
       - main
     paths:
-      - ./ai/'**.py'
-      - ./ai/'**.yml'
-      - ./ai/'**.yaml'
+      - 'ai/**.py'
+      - 'ai/**.yml'
+      - 'ai/**.yaml'
 
 env:
   APP_NAME: roshambo
