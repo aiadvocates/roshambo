@@ -1,42 +1,24 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Tensor, InferenceSession } from "onnxruntime-node";
-import { convertToTensor } from "../shared/process"
+import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import axios from "axios";
 
-const modelClasses = [
-  "none",
-  "paper",
-  "rock",
-  "scissors"
-];
 
-const httpTrigger: AzureFunction = async (
-  context: Context,
-  req: HttpRequest
-): Promise<void> => {
-  const modelFile = context.executionContext.functionDirectory + "/model.onnx";
-  const model = await InferenceSession.create(modelFile);
-  const data = req.body.data;
-  const width = req.body.width;
-  const height = req.body.height;
-  const t = convertToTensor(data, height, width);
-  
-  const feeds: Record<string, Tensor> = {};
-  feeds[model.inputNames[0]] = t;
-  const outputData = await model.run(feeds);
-  const preds = <Float32Array>outputData[model.outputNames[0]].data;
-  
-  const idx = preds.indexOf(Math.max(...preds));
-  const probs = {}
-  for(let i = 0; i< preds.length; i++) {
-    probs[modelClasses[i]] = preds[i] * 100
-  }
+const inferenceApi = process.env["INFERENCE_ENDPOINT"];
+const inferencekey = process.env["INFERENCE_KEY"];
 
-  context.res = {
-    body: {
-      prediction: modelClasses[idx],
-      probabilities: probs
-    },
-  };
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+    context.log('HTTP trigger function processed a request.');
+
+    const response = await axios.post(inferenceApi, { 'image': req.body?.image }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${inferencekey}`
+      }
+    });
+    
+    context.res = {
+        // status: 200, /* Defaults to 200 */
+        body: response.data
+    };
 };
 
 export default httpTrigger;
