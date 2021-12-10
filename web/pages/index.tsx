@@ -79,10 +79,10 @@ export default function Home() {
         <div className="text-3xl">
           <div>{prediction.prediction}</div>
           <ul>
-            <li>none: {prediction.scores.none}</li>
-            <li>paper: {prediction.scores.paper}</li>
-            <li>rock: {prediction.scores.rock}</li>
-            <li>scissors: {prediction.scores.scissors}</li>
+            <li>none: {prediction?.scores.none}</li>
+            <li>paper: {prediction?.scores.paper}</li>
+            <li>rock: {prediction?.scores.rock}</li>
+            <li>scissors: {prediction?.scores.scissors}</li>
           </ul>
         </div>
       </main>
