@@ -77,7 +77,7 @@ export default function Home() {
           <Video device={videoId} onVideoSet={setSettings} onFrameset={setFrame} />
         </div>
         <div className="text-3xl">
-          <div>{prediction.prediction}</div>
+          <div>{prediction?.prediction}</div>
           <ul>
             <li>none: {prediction?.scores.none}</li>
             <li>paper: {prediction?.scores.paper}</li>
