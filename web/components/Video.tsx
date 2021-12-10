@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 interface Props {
   device: string;
   onVideoSet(settings: MediaTrackSettings): void;
-  onFrameset(frame: ImageData): void;
+  onFrameset(frame: string): void;
 }
 
 export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
@@ -13,8 +13,12 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
   const handleSubmit = () => {
     if (video.current && canvas.current) {
       const ctx = canvas.current.getContext("2d");
-      ctx.drawImage(video.current, 0, 0, 224, 224);
-      onFrameset(ctx.getImageData(0, 0, 224, 224));
+      if (ctx) {
+        ctx.clearRect(0, 0, 320, 240);
+        ctx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+        ctx.drawImage(video.current, 0, 0, 320, 240);
+        onFrameset(canvas.current.toDataURL());
+      }
     }
   };
 
@@ -57,7 +61,7 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
         height="240"
         autoPlay={true}
       ></video>
-      <canvas className="mt-3" ref={canvas} width="224" height="224"></canvas>
+      <canvas className="mt-3" ref={canvas} width="320" height="240"></canvas>
     </>
   );
 };
