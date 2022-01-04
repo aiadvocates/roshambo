@@ -25,6 +25,7 @@ export default function Home() {
   const [videoId, setVideoId] = useState<string>(null);
   const [settings, setSettings] = useState<MediaTrackSettings>(null);
   const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -45,12 +46,21 @@ export default function Home() {
         },
       };
 
+      if(canvas.current) {
+        console.log('CURRENT');
+        const ctx = canvas.current.getContext('2d');
+        const theFrame = document.createElement('img')
+        theFrame.src = frame;
+        ctx.drawImage(theFrame, 0, 0);
+      }
+      
       const response = await fetch("/api/predict", options);
       const pred: Prediction = await response.json();
       console.log(pred);
       setPrediction(pred);
     })();
   };
+
   const handleSubmit = () => {};
 
   return (
