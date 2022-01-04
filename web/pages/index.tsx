@@ -25,6 +25,7 @@ export default function Home() {
   const [videoId, setVideoId] = useState<string>(null);
   const [settings, setSettings] = useState<MediaTrackSettings>(null);
   const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -33,7 +34,6 @@ export default function Home() {
       setMessage("we don't need this");
     })();
   }, []);
-
 
   const setFrame = (frame: string) => {
     (async () => {
@@ -45,13 +45,22 @@ export default function Home() {
         },
       };
 
+      if(canvas.current) {
+        console.log('CURRENT');
+        const ctx = canvas.current.getContext('2d');
+        const theFrame = document.createElement('img')
+        theFrame.src = frame;
+        ctx.drawImage(theFrame, 0, 0);
+      }
+      
       const response = await fetch("/api/predict", options);
       const pred: Prediction = await response.json();
       console.log(pred);
       setPrediction(pred);
     })();
   };
-  
+
+  const handleSubmit = () => {};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -73,8 +82,28 @@ export default function Home() {
             <DeviceSelector onSelect={setVideoId} />
           </div>
         </div>
-        <div className="mt-5">
-          <Video device={videoId} onVideoSet={setSettings} onFrameset={setFrame} />
+        <div className="flex-row max-w-screen-lg mx-auto mt-5 flex-nowrap">
+          <div className="flex mb-12">
+            <Video
+              device={videoId}
+              onVideoSet={setSettings}
+              onFrameset={setFrame}
+            />
+          </div>
+          <div className="flex">
+            <canvas
+              ref={canvas}
+              className="mt-3 border border-gray-500 border-solid"
+              width="320"
+              height="240"
+            ></canvas>
+          </div>
+        </div>
+        <div>
+          <button
+            className="invisible px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+            onClick={handleSubmit}
+          ></button>
         </div>
         <div className="text-3xl">
           <div>{prediction?.prediction}</div>
