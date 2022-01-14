@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Video from "~/components/Video";
 import DeviceSelector from "~/components/DeviceSelector";
+import Theme from "~/components/layout/theme";
 
 interface Scores {
   none: number;
@@ -35,7 +36,6 @@ export default function Home() {
     })();
   }, []);
 
-
   const setFrame = (frame: string) => {
     (async () => {
       const options: RequestInit = {
@@ -46,14 +46,14 @@ export default function Home() {
         },
       };
 
-      if(canvas.current) {
-        console.log('CURRENT');
-        const ctx = canvas.current.getContext('2d');
-        const theFrame = document.createElement('img')
+      if (canvas.current) {
+        console.log("CURRENT");
+        const ctx = canvas.current.getContext("2d");
+        const theFrame = document.createElement("img");
         theFrame.src = frame;
         ctx.drawImage(theFrame, 0, 0);
       }
-      
+
       const response = await fetch("/api/predict", options);
       const pred: Prediction = await response.json();
       console.log(pred);
@@ -64,69 +64,52 @@ export default function Home() {
   const handleSubmit = () => {};
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <Theme title="roshambo.ai">
+      <div className="px-6 text-gray-600 bg-white py6 lg:px-8">
+        <div className="grid max-w-screen-xl gap-6 mx-auto md:grid-cols-2 lg:gap-x-8">
+          Welcome to roshambo.ai
+        </div>
+      </div>
+      <div className="px-6 py-6 text-gray-600 bg-white lg:px-8">
+        <div className="grid max-w-screen-xl gap-6 mx-auto md:grid-cols-2 lg:gap-x-8">
+          <div className="px-6 pt-6 pb-6 bg-gray-200 rounded">
+            <div>
+              <DeviceSelector onSelect={setVideoId} />
+            </div>
+            <div>
+              <Video
+                device={videoId}
+                onVideoSet={setSettings}
+                onFrameset={setFrame}
+              />
+            </div>
+          </div>
+          <div className="px-6 pt-6 pb-6 bg-gray-200 rounded xl:pt-48">
+            <div>
+              <canvas
+                ref={canvas}
+                className="mt-3 border border-gray-500 border-solid"
+                width="320"
+                height="240"
+              ></canvas>
+            </div>
 
-      <main className="flex flex-col items-center flex-1 w-full px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{" "}
-          <a className="text-blue-600" href="https://nextjs.org">
-            roshambo.ai
-          </a>
-        </h1>
-
-        <div className="mt-3 text-2xl">
-          <div>
-            <DeviceSelector onSelect={setVideoId} />
+            <div>{prediction?.prediction}</div>
+            <ul>
+              <li>none: {prediction?.scores.none}</li>
+              <li>paper: {prediction?.scores.paper}</li>
+              <li>rock: {prediction?.scores.rock}</li>
+              <li>scissors: {prediction?.scores.scissors}</li>
+            </ul>
           </div>
         </div>
-        <div className="flex-row max-w-screen-lg mx-auto mt-5 flex-nowrap">
-          <div className="flex mb-12">
-            <Video
-              device={videoId}
-              onVideoSet={setSettings}
-              onFrameset={setFrame}
-            />
-          </div>
-          <div className="flex">
-            <canvas
-              ref={canvas}
-              className="mt-3 border border-gray-500 border-solid"
-              width="320"
-              height="240"
-            ></canvas>
-          </div>
-        </div>
-        <div>
-          <button
-            className="invisible px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-            onClick={handleSubmit}
-          ></button>
-        </div>
-        <div className="text-3xl">
-          <div>{prediction?.prediction}</div>
-          <ul>
-            <li>none: {prediction?.scores.none}</li>
-            <li>paper: {prediction?.scores.paper}</li>
-            <li>rock: {prediction?.scores.rock}</li>
-            <li>scissors: {prediction?.scores.scissors}</li>
-          </ul>
-        </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://github.com/aiadvocates/roshambo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by US - #AIShow FL (For Lyfe)
-        </a>
-      </footer>
-    </div>
+      </div>
+      <div>
+        <button
+          className="invisible px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+          onClick={handleSubmit}
+        ></button>
+      </div>
+    </Theme>
   );
 }
