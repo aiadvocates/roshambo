@@ -1,2 +1,3 @@
 azureml_outputs
 cert/
+*.zip
