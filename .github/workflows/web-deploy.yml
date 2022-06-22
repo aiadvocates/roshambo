@@ -1,6 +1,8 @@
-name: Deploy Node.js to Azure Web App
+name: Deploy roshambo.ai
 
 on:
+  workflow_dispatch: 
+  
   push:
     branches:
       - main
