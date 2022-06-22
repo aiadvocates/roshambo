@@ -22,9 +22,9 @@ interface Prediction {
 }
 
 export default function Home() {
-  const [message, setMessage] = useState(null);
-  const [videoId, setVideoId] = useState<string>(null);
-  const [settings, setSettings] = useState<MediaTrackSettings>(null);
+  const [message, setMessage] = useState<string>('');
+  const [videoId, setVideoId] = useState<string>('');
+  const [settings, setSettings] = useState<MediaTrackSettings>({});
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -50,7 +50,7 @@ export default function Home() {
         const ctx = canvas.current.getContext("2d");
         const theFrame = document.createElement("img");
         theFrame.src = frame;
-        ctx.drawImage(theFrame, 0, 0);
+        ctx && ctx.drawImage(theFrame, 0, 0);
       }
 
       const response = await fetch("/api/analyze", options);

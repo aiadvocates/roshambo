@@ -7,10 +7,10 @@ interface DeviceProps {
 
 export const DeviceSelector = ({onSelect}: DeviceProps) => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
-  const selectEl = useRef(null)
+  const selectEl = useRef<HTMLSelectElement>(null)
 
-  const selectDevice = () => onSelect(selectEl.current.value)
-  
+  const selectDevice = () => selectEl.current && onSelect(selectEl.current?.value);
+    
   useEffect(() => {
     (async () => {
       const d = await getMediaDevices()

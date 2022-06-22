@@ -34,7 +34,7 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
             },
           });
           const tracks = stream.getVideoTracks();
-          if (video && tracks.length >= 1) {
+          if (video.current && tracks.length >= 1) {
             onVideoSet(tracks[0].getSettings());
             video.current.srcObject = stream;
             video.current.play();

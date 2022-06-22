@@ -19,6 +19,7 @@ env:
   NODE_VERSION: '16.x'
   APP_NAME: rocksie
   APP_RG: roshambo
+  ARTIFACT: webapp-deploy.zip
 
 jobs:
   build-and-deploy:
@@ -44,11 +45,10 @@ jobs:
         cd web
         yarn install
         yarn build
-        zip -r ../webapp-deploy.zip *
-
-
+        zip -r ../${{ env.ARTIFACT }} *
+        cd ..
 
     - name: 'Deploy to Azure WebApp'
       run: |
         # deploy using azure CLI
-        az webapp deploy --resource-group ${{ env.APP_RG }} --name ${{ env.APP_NAME }} --src-path webapp-deploy.zip --type zip
+        az webapp deploy --resource-group ${{ env.APP_RG }} --name ${{ env.APP_NAME }} --src-path ${{ env.ARTIFACT }} --type zip
