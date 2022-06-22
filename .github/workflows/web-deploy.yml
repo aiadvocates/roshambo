@@ -1,0 +1,43 @@
+name: Deploy Node.js to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web/**'
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - 'web/**'
+
+env:
+  AZURE_WEBAPP_NAME: rocksie
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  NODE_VERSION: '16.x'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - name: yarn install and build
+      run: |
+        # Build and test the project, then
+        # deploy to Azure Web App.
+        yarn install
+        yarn build
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}

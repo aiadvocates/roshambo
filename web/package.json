@@ -9,6 +9,8 @@
     "export": "next build && next export"
   },
   "dependencies": {
+    "@azure/core-http": "^2.2.5",
+    "axios": "^0.27.2",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
     "next": "10.2.3",

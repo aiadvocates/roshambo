@@ -1,8 +1,0 @@
-{
-  "azureFunctions.deploySubpath": "api",
-  "azureFunctions.postDeployTask": "npm install (functions)",
-  "azureFunctions.projectLanguage": "TypeScript",
-  "azureFunctions.projectRuntime": "~3",
-  "azureFunctions.preDeployTask": "npm prune (functions)",
-  "azureML.defaultWorkspaceId": "/subscriptions/91d27443-f037-45d9-bb0c-428256992df6/resourceGroups/robots/providers/Microsoft.MachineLearningServices/workspaces/hal",
-}

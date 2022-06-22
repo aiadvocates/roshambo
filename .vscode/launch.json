@@ -2,11 +2,30 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Node Functions",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "preLaunchTask": "func: host start"
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/web",
+      "request": "launch",
+      "command": "yarn dev"
+    },
+    {
+      "name": "Next.js: debug client-side",
+      "type": "pwa-chrome",
+      "cwd": "${workspaceFolder}/web",
+      "request": "launch",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "Next.js: debug full stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dev",
+      "cwd": "${workspaceFolder}/src",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithEdge"
+      }
     }
   ]
 }

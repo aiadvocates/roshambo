@@ -12,11 +12,11 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
   const handleSubmit = () => {
     if (video.current) {
       const canvas = document.createElement('canvas')
+      canvas.height = video.current.videoHeight;
+      canvas.width = video.current.videoWidth;
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.clearRect(0, 0, 320, 240);
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(video.current, 0, 0, 320, 240);
+        ctx.drawImage(video.current, 0, 0, canvas.width, canvas.height);
         onFrameset(canvas.toDataURL());
       }
     }
@@ -49,7 +49,7 @@ export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
   return (
     <>
       <button
-        className="hidden px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
         onClick={handleSubmit}
       >
         Submit

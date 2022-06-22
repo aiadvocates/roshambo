@@ -47,14 +47,13 @@ export default function Home() {
       };
 
       if (canvas.current) {
-        console.log("CURRENT");
         const ctx = canvas.current.getContext("2d");
         const theFrame = document.createElement("img");
         theFrame.src = frame;
         ctx.drawImage(theFrame, 0, 0);
       }
 
-      const response = await fetch("/api/predict", options);
+      const response = await fetch("/api/analyze", options);
       const pred: Prediction = await response.json();
       console.log(pred);
       setPrediction(pred);
@@ -96,19 +95,19 @@ export default function Home() {
 
             <div>{prediction?.prediction}</div>
             <ul>
-              <li>none: {prediction?.scores.none}</li>
-              <li>paper: {prediction?.scores.paper}</li>
-              <li>rock: {prediction?.scores.rock}</li>
-              <li>scissors: {prediction?.scores.scissors}</li>
+              <li>none: {prediction?.scores?.none}</li>
+              <li>paper: {prediction?.scores?.paper}</li>
+              <li>rock: {prediction?.scores?.rock}</li>
+              <li>scissors: {prediction?.scores?.scissors}</li>
             </ul>
           </div>
         </div>
       </div>
       <div>
         <button
-          className="invisible px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+          className="hidden px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
           onClick={handleSubmit}
-        ></button>
+        >Test</button>
       </div>
     </Theme>
   );
