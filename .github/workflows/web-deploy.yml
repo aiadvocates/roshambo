@@ -2,7 +2,7 @@ name: Deploy roshambo.ai
 
 on:
   workflow_dispatch: 
-  
+
   push:
     branches:
       - main
@@ -16,31 +16,39 @@ on:
       - 'web/**'
 
 env:
-  AZURE_WEBAPP_NAME: rocksie
-  AZURE_WEBAPP_PACKAGE_PATH: './web'
   NODE_VERSION: '16.x'
+  APP_NAME: rocksie
+  APP_RG: roshambo
 
 jobs:
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    environment: dev
     steps:
-    - uses: actions/checkout@master
+    - name: 'Checkout'
+      uses: actions/checkout@master
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_WEBAPP_TOKEN }}
+
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ env.NODE_VERSION }}
-    - name: yarn install and build
+
+    - name: 'create package'
       run: |
-        # Build and test the project, then
-        # deploy to Azure Web App.
+        # Build site and create artifact
         cd web
         yarn install
         yarn build
+        zip -r ../webapp-deploy.zip *
+
+
+
     - name: 'Deploy to Azure WebApp'
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      run: |
+        # deploy using azure CLI
+        az webapp deploy --resource-group ${{ env.APP_RG }} --name ${{ env.APP_NAME }} --src-path webapp-deploy.zip --type zip
