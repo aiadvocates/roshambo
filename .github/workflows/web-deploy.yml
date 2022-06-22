@@ -45,7 +45,7 @@ jobs:
         cd web
         yarn install
         yarn build
-        zip -r ../${{ env.ARTIFACT }} *
+        zip -r ../${{ env.ARTIFACT }} .* *
         cd ..
 
     - name: 'Deploy to Azure WebApp'
