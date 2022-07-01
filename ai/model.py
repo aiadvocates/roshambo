@@ -18,8 +18,8 @@ class RoshamboModel(pl.LightningModule):
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.model_type = "vgg19"
-        self.xfer = models.vgg19(pretrained=True)
+        self.model_type = "resnet18"
+        self.xfer = models.resnet18(pretrained=True)
         self.fc1 = nn.Linear(1000, classes)
 
         self.param_size = 0
@@ -66,7 +66,9 @@ class RoshamboModel(pl.LightningModule):
 
         self.to_onnx(model_dir / 'model.onnx', 
                      torch.rand((1,3,224,224)), 
-                     export_params=True)
+                     export_params=True,
+                     input_names=['image'],
+                     output_names=['prediction'])
 
         file_size = os.path.getsize(str(model_dir / 'model.onnx'))
 

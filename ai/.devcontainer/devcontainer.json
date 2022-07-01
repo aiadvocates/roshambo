@@ -4,7 +4,7 @@
 	"name": "Roshambo AI Container",
 	"build": {
 		"dockerfile": "Dockerfile",
-		"context": ".",
+		"context": "."
 	},
 
 	// Set *default* container specific settings.json values on container create.
@@ -31,7 +31,7 @@
 	],
   "runArgs": [
     "--gpus=all"
-  ],
+  ]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

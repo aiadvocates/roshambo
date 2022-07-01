@@ -1,6 +1,0 @@
-$schema: https://azuremlschemas.azureedge.net/latest/model.schema.json
-name: roshambo
-version: 1
-local_path: ../azureml_outputs/Run_2/outputs/outputs/model
-tags:
-  type: resnet18

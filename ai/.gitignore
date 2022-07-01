@@ -1,7 +1,5 @@
-secrets.json
-outputs/
-data/
-lightning_logs/
 __pycache__/
+.venv/
+data/
 mlruns/
-.vscode/
+outputs/

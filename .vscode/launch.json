@@ -26,6 +26,23 @@
         "uriFormat": "%s",
         "action": "debugWithEdge"
       }
+    },
+    {
+      "name": "PL Trainer",
+      "type": "python",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "program": "trainer.py",
+      "args": ["--config", "config.yml"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run teh filez",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${fileDirname}",
+      "console": "integratedTerminal"
     }
   ]
 }

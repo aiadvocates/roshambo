@@ -1,8 +1,11 @@
-.vscode/
+__pycache__/
+.devcontainer/
+.venv/
+cloud/
 data/
 mlruns/
-outputs/
 notebooks/
-cloud/
-azureml_outputs/
-__pycache__
+outputs/
+.gitignore
+requirements.txt
+score.py

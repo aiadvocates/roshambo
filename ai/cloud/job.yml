@@ -1,15 +1,16 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 experiment_name: roshambo
-code: 
-  local_path: ../
+display_name: roshambo
+code: ../
 command: >-
-  python trainer.py 
+  python trainer.py fit 
   --config config.yml 
-  --trainer.default_root_dir ./outputs 
-  --data.data_dir {inputs.training_data}
-environment: azureml:pytorch-lightning:6
-compute: azureml:gandalf
+  --trainer.default_root_dir ./outputs
+  --data.data_dir ${{inputs.training_data}}
 inputs:
   training_data:
-    data: azureml:roshambo:1
-    mode: mount
+    type: uri_folder
+    path: azureml:roshambo:1
+    mode: ro_mount
+environment: azureml:pytorch-lightning:6
+compute: azureml:gandalf
