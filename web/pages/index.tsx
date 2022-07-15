@@ -22,11 +22,11 @@ interface Prediction {
 }
 
 export default function Home() {
-  const [message, setMessage] = useState<string>('');
-  const [videoId, setVideoId] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
+  const [videoId, setVideoId] = useState<string>("");
   const [settings, setSettings] = useState<MediaTrackSettings>({});
   const [prediction, setPrediction] = useState<Prediction | null>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
+  const image = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -46,16 +46,10 @@ export default function Home() {
         },
       };
 
-      if (canvas.current) {
-        const ctx = canvas.current.getContext("2d");
-        const theFrame = document.createElement("img");
-        theFrame.src = frame;
-        ctx && ctx.drawImage(theFrame, 0, 0);
-      }
-
+      image.current && (image.current.src = frame);
       const response = await fetch("/api/analyze", options);
       const pred: Prediction = await response.json();
-      console.log(pred);
+      //console.log(pred);
       setPrediction(pred);
     })();
   };
@@ -83,22 +77,34 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="px-6 pt-6 pb-6 bg-gray-200 rounded xl:pt-48">
+          <div className="px-6 pt-6 pb-6 bg-gray-200 rounded">
             <div>
-              <canvas
-                ref={canvas}
+              <img
+                ref={image}
+                alt="current"
+                src="https://via.placeholder.com/320x240"
                 className="mt-3 border border-gray-500 border-solid"
                 width="320"
                 height="240"
-              ></canvas>
+              />
             </div>
-
-            <div>{prediction?.prediction}</div>
-            <ul>
-              <li>none: {prediction?.scores?.none}</li>
-              <li>paper: {prediction?.scores?.paper}</li>
-              <li>rock: {prediction?.scores?.rock}</li>
-              <li>scissors: {prediction?.scores?.scissors}</li>
+            <div className="text-red-600 text-5xl font-bold">
+              {prediction?.prediction}
+            </div>
+            <ul className="text-lg">
+              <li>
+                none: {((prediction?.scores.none ?? 0) * 100).toFixed(2)}%
+              </li>
+              <li>
+                paper: {((prediction?.scores.paper ?? 0) * 100).toFixed(2)}%
+              </li>
+              <li>
+                rock: {((prediction?.scores.rock ?? 0) * 100).toFixed(2)}%
+              </li>
+              <li>
+                scissors:{" "}
+                {((prediction?.scores.scissors ?? 0) * 100).toFixed(2)}%
+              </li>
             </ul>
           </div>
         </div>
@@ -107,7 +113,9 @@ export default function Home() {
         <button
           className="hidden px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
           onClick={handleSubmit}
-        >Test</button>
+        >
+          Test
+        </button>
       </div>
     </Theme>
   );
