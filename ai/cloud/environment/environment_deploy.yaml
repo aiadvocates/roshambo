@@ -1,0 +1,9 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: pytorch-lightning-gpu-deploy
+version: 4
+tags:
+  framework: onnxruntime-gpu
+  contact: Seth Juarez <seth.juarez@microsoft.com>
+  ort_version: 1.12.1
+build:
+  path: deploy

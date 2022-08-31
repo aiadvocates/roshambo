@@ -1,0 +1,10 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: pytorch-lightning
+version: 9
+tags:
+  framework: PyTorch Lightning
+  contact: Seth Juarez <seth.juarez@microsoft.com>
+  pl_version: 1.7.2
+  pt_version: 1.12.1
+build:
+  path: train

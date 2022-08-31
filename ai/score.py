@@ -27,7 +27,7 @@ def init():
         root_dir = Path(os.environ['AZUREML_MODEL_DIR']).resolve() / 'model'
     else:
         logger.info('using local')
-        root_dir = Path('outputs/model').resolve()
+        root_dir = Path('outputs/model').absolute().resolve()
 
     logger.info(f'using model path {root_dir}')    
     meta_file = root_dir / 'meta.json'
@@ -44,7 +44,8 @@ def init():
     model_stamp = model_meta['timestamp']
 
     logger.info('loading model')
-    session = rt.InferenceSession(str(model_file))
+    session = rt.InferenceSession(str(model_file),
+                    providers=['CUDAExecutionProvider'])
     input_name = session.get_inputs()[0].name
     logger.info(f'model load complete (entry: {input_name})')
     transform = transforms.Compose([

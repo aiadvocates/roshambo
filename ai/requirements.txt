@@ -3,6 +3,7 @@ torch
 torchvision
 torchaudio
 mlflow
+jsonargparse[signatures]
 pytorch-lightning[extra]
 ipykernel
 onnxruntime-gpu

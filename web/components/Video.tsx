@@ -1,69 +1,79 @@
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  forwardRef,
+} from "react";
 
 interface Props {
   device: string;
   onVideoSet(settings: MediaTrackSettings): void;
-  onFrameset(frame: string): void;
+  className?: string;
 }
 
-export const Video = ({ device, onVideoSet, onFrameset }: Props) => {
-  const video = useRef<HTMLVideoElement>(null);
+export interface VideoRef {
+  getFrame(): string | null;
+}
 
-  const handleSubmit = () => {
-    if (video.current) {
-      const canvas = document.createElement('canvas')
-      canvas.height = video.current.videoHeight;
-      canvas.width = video.current.videoWidth;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(video.current, 0, 0, canvas.width, canvas.height);
-        onFrameset(canvas.toDataURL());
-      }
-    }
-  };
+export const Video = forwardRef<VideoRef, Props>(
+  ({ device, onVideoSet, className }: Props, ref) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      (async () => {
-        try {
-          let stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              deviceId: {
-                exact: device,
-              },
-            },
-          });
-          const tracks = stream.getVideoTracks();
-          if (video.current && tracks.length >= 1) {
-            onVideoSet(tracks[0].getSettings());
-            video.current.srcObject = stream;
-            video.current.play();
-          }
-        } catch (err) {
-          console.log(err);
+    useImperativeHandle(ref, () => ({
+      getFrame,
+    }));
+
+    const getFrame = () => {
+      if (videoRef.current) {
+        const m = 256;
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.floor(
+          videoRef.current.videoWidth * (m / videoRef.current.videoHeight)
+        );
+        canvas.height = Math.floor(
+          videoRef.current.videoHeight * (m / videoRef.current.videoHeight)
+        );
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL();
         }
-      })();
-    }
-  }, [device]);
+      }
+      return null;
+    };
 
-  return (
-    <>
-      <button
-        className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-        onClick={handleSubmit}
-      >
-        Submit
-      </button>
+    useEffect(() => {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        (async () => {
+          try {
+            let stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                deviceId: {
+                  exact: device,
+                },
+              },
+            });
+            const tracks = stream.getVideoTracks();
+            if (videoRef.current && tracks.length >= 1) {
+              onVideoSet(tracks[0].getSettings());
+              videoRef.current.srcObject = stream;
+              videoRef.current.play();
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        })();
+      }
+    }, [device]);
+
+    return (
       <video
-        onClick={handleSubmit}
-        className="mt-3"
-        ref={video}
+        className={className}
+        ref={videoRef}
         width="320"
         height="240"
         autoPlay={true}
       ></video>
-    </>
-  );
-};
-
-export default Video;
+    );
+  }
+);

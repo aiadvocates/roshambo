@@ -10,7 +10,7 @@ command: >-
 inputs:
   training_data:
     type: uri_folder
-    path: azureml:roshambo:2
+    path: azureml:rpsn:1
     mode: ro_mount
-environment: azureml:pytorch-lightning:6
+environment: azureml:pytorch-lightning:9
 compute: azureml:gandalf

@@ -1,5 +1,7 @@
+# pytorch_lightning==1.7.2
+seed_everything: true
 trainer:
-  checkpoint_callback: true
+  enable_checkpointing: true
   callbacks:
   - class_path: pytorch_lightning.callbacks.EarlyStopping
     init_args:
@@ -19,8 +21,10 @@ trainer:
     init_args:
       logging_interval: 'step'
   default_root_dir: outputs
+  auto_select_gpus: true
   gpus: 1
   max_epochs: 100
+  logger: true
 model:
   classes: 4
   lr: .01
