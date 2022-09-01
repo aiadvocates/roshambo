@@ -1,4 +1,4 @@
-name: Roshambo CI/CD
+name: roshambo.ai - training
 
 on:
   workflow_dispatch:

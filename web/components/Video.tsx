@@ -19,6 +19,7 @@ export interface VideoRef {
 
 export const Video = forwardRef<VideoRef, Props>(
   ({ device, onVideoSet, className, height, width }: Props, ref) => {
+    
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useImperativeHandle(ref, () => ({
