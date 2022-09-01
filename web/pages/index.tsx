@@ -78,6 +78,8 @@ export default function Home() {
             <div>
               <Video
                 className="mt-3"
+                height={320}
+                width={240}
                 device={videoId}
                 onVideoSet={setSettings}
                 ref={videoRef}

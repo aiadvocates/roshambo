@@ -9,6 +9,8 @@ interface Props {
   device: string;
   onVideoSet(settings: MediaTrackSettings): void;
   className?: string;
+  height?: number;
+  width?: number;
 }
 
 export interface VideoRef {
@@ -16,7 +18,7 @@ export interface VideoRef {
 }
 
 export const Video = forwardRef<VideoRef, Props>(
-  ({ device, onVideoSet, className }: Props, ref) => {
+  ({ device, onVideoSet, className, height, width }: Props, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -70,8 +72,8 @@ export const Video = forwardRef<VideoRef, Props>(
       <video
         className={className}
         ref={videoRef}
-        width="320"
-        height="240"
+        width={width}
+        height={height}
         autoPlay={true}
       ></video>
     );

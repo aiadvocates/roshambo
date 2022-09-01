@@ -1,4 +1,4 @@
-name: Deploy roshambo.ai
+name: roshambo.ai deployment
 
 on:
   workflow_dispatch: 
