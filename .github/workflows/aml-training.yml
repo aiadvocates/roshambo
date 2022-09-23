@@ -1,4 +1,4 @@
-name: roshambo.ai - training
+name: roshambo.ai training
 
 on:
   workflow_dispatch:
