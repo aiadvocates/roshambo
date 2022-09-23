@@ -75,8 +75,8 @@ jobs:
       run: |
         az ml job download --name $APP_NAME_$GITHUB_RUN_ID --download-path ./run
         mkdir model
-        cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/model.onnx ./model/model.onnx
-        cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/meta.json ./model/meta.json
+        cp ./run/artifacts/outputs/model/model.onnx ./model/model.onnx
+        cp ./run/artifacts/outputs/model/meta.json ./model/meta.json
         
         LAST_MODEL_VER=$(az ml model list -n $APP_NAME-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
         az ml model create --name $APP_NAME-model --local-path ./model --model-framework Onnx --version $((LAST_MODEL_VER+1)) --run-id $APP_NAME_$GITHUB_RUN_ID
@@ -110,7 +110,7 @@ jobs:
       run: |
         ENDPOINT_EXISTS=$(az ml online-endpoint list -o tsv --query "[?name=='$APP_NAME-endpoint'][name]" |  wc -l)
         if [[ ENDPOINT_EXISTS -ne 1 ]]; then
-            az ml online-endpoint create -n $APP_NAME-endpoint -f ./ai/cloud/endpoint.yml    
+            az ml online-endpoint create -n $APP_NAME-endpoint -f ./ai/cloud/deploy/endpoint.yml    
         else
             echo "endpoint exists"
         fi
@@ -146,7 +146,7 @@ jobs:
         MODEL_REF=azureml:$APP_NAME-model:$LATEST_MODEL_VERSION
 
         echo $MODEL_REF
-        az ml online-deployment create --name $APP_NAME-$GITHUB_RUN_ID --endpoint $APP_NAME-endpoint -f ./ai/cloud/deployment.yml --set model=$MODEL_REF
+        az ml online-deployment create --name $APP_NAME-$GITHUB_RUN_ID --endpoint $APP_NAME-endpoint -f ./ai/cloud/deploy/deployment.yml --set model=$MODEL_REF
 
         # if PROD does not exist, mark this as prod and exit
         PROD_DEPLOYMENT=$(az ml online-endpoint show -n $APP_NAME-endpoint -o tsv --query "tags.PROD_DEPLOYMENT")
