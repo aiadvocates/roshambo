@@ -79,7 +79,7 @@ jobs:
         cp ./run/$APP_NAME_$GITHUB_RUN_ID/outputs/model/meta.json ./model/meta.json
         
         LAST_MODEL_VER=$(az ml model list -n $APP_NAME-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
-        az ml model create --name $APP_NAME-model --local-path ./model --version $((LAST_MODEL_VER+1))
+        az ml model create --name $APP_NAME-model --local-path ./model --model-framework Onnx --version $((LAST_MODEL_VER+1)) --run-id $APP_NAME_$GITHUB_RUN_ID
 
   endpoint:
     runs-on: ubuntu-latest
