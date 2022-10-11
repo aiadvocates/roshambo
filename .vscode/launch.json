@@ -10,7 +10,7 @@
     },
     {
       "name": "Next.js: debug client-side",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "cwd": "${workspaceFolder}/web",
       "request": "launch",
       "url": "http://localhost:3000"
@@ -31,9 +31,9 @@
       "name": "PL Trainer",
       "type": "python",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/ai",
       "program": "trainer.py",
-      "args": ["--config", "config.yml"],
+      "args": ["fit", "--config", "config.yml"],
       "console": "integratedTerminal"
     },
     {
