@@ -112,9 +112,9 @@ jobs:
     - id: deployments
       name: check endpoint
       run: |
-        ENDPOINT_EXISTS=$(az ml online-endpoint list -o tsv --query "[?name=='${APP_NAME}-endpoint'][name]" |  wc -l)
+        ENDPOINT_EXISTS=$(az ml online-endpoint list -o tsv --query "[?name=='${APP_NAME}-app'][name]" |  wc -l)
         if [[ ENDPOINT_EXISTS -ne 1 ]]; then
-            az ml online-endpoint create -n ${APP_NAME}-endpoint -f ./ai/cloud/deploy/endpoint.yml    
+            az ml online-endpoint create -n ${APP_NAME}-app -f ./ai/cloud/deploy/endpoint.yml    
         else
             echo "endpoint exists"
         fi
@@ -150,14 +150,14 @@ jobs:
         MODEL_REF=azureml:${APP_NAME}-model:$LATEST_MODEL_VERSION
 
         echo $MODEL_REF
-        az ml online-deployment create --name ${APP_NAME}-${GITHUB_RUN_ID} --endpoint ${APP_NAME}-endpoint -f ./ai/cloud/deploy/deployment.yml --set model=$MODEL_REF
+        az ml online-deployment create --name ${APP_NAME}-${GITHUB_RUN_ID} --endpoint ${APP_NAME}-app -f ./ai/cloud/deploy/deployment.yml --set model=$MODEL_REF
 
         # if PROD does not exist, mark this as prod and exit
-        PROD_DEPLOYMENT=$(az ml online-endpoint show -n ${APP_NAME}-endpoint -o tsv --query "tags.PROD_DEPLOYMENT")
+        PROD_DEPLOYMENT=$(az ml online-endpoint show -n ${APP_NAME}-app -o tsv --query "tags.PROD_DEPLOYMENT")
         if [[ -z "$PROD_DEPLOYMENT" ]]; then
             # tag the current deployment as prod and set traffic to 100%
-            az ml online-endpoint update --name ${APP_NAME}-endpoint --traffic "${APP_NAME}-${GITHUB_RUN_ID}=100" --set tags.PROD_DEPLOYMENT=${APP_NAME}_${GITHUB_RUN_ID}
+            az ml online-endpoint update --name ${APP_NAME}-app --traffic "${APP_NAME}-${GITHUB_RUN_ID}=100" --set tags.PROD_DEPLOYMENT=${APP_NAME}_${GITHUB_RUN_ID}
         else
             # modify traffic to siphon 10% to new deployment
-            az ml online-endpoint update -n ${APP_NAME}-endpoint --traffic "$PROD_DEPLOYMENT=90 ${APP_NAME}-${GITHUB_RUN_ID}=10"    
+            az ml online-endpoint update -n ${APP_NAME}-app --traffic "$PROD_DEPLOYMENT=90 ${APP_NAME}-${GITHUB_RUN_ID}=10"    
         fi
