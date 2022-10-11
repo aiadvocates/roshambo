@@ -1,10 +1,10 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
 name: blue
 app_insights_enabled: true
-model: azureml:roshambo:1
-code_configuration:      
-  code: 
-    local_path: ../
+model: azureml:roshambo-model@latest
+code_configuration:
+  code: ./
   scoring_script: score.py    
-environment: azureml:pytorch-lightning-gpu-deploy:3
+environment: azureml:pytorch-lightning-gpu-deploy@latest
 instance_type: Standard_NC6s_v3
 instance_count: 1

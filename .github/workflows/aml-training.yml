@@ -73,17 +73,13 @@ jobs:
     - name: Register Model
       id: register
       run: |
-        az ml job download --name ${APP_NAME}_${GITHUB_RUN_ID} --download-path ./run
-        mkdir model
-        cp ./run/artifacts/outputs/model/model.onnx ./model/model.onnx
-        cp ./run/artifacts/outputs/model/meta.json ./model/meta.json
-
         LAST_MODEL_VER=0
         MODEL_EXISTS=$(az ml model list -o tsv --query "[?name=='${APP_NAME}-model'][name]" |  wc -l)
         if [[ MODEL_EXISTS -eq 1 ]]; then
           LAST_MODEL_VER=$(az ml model list -n ${APP_NAME}-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
         fi
-        az ml model create --name ${APP_NAME}-model --path ./model --version $((LAST_MODEL_VER+1))
+        # create model from run output
+        az ml model create --name roshambo-model --version $((LAST_MODEL_VER+1)) --path azureml://jobs/${APP_NAME}_${GITHUB_RUN_ID}/outputs/artifacts/outputs/model/
 
   endpoint:
     runs-on: ubuntu-latest
@@ -146,11 +142,12 @@ jobs:
           az config set defaults.group=${{secrets.AML_RG}}
     - name: Add Deployment
       run: |
-        LATEST_MODEL_VERSION=$(az ml model list -n ${APP_NAME}-model --query "[].version.to_number(@) | max(@)" | tr -d "\r")
-        MODEL_REF=azureml:${APP_NAME}-model:$LATEST_MODEL_VERSION
-
-        echo $MODEL_REF
-        az ml online-deployment create --name ${APP_NAME}-${GITHUB_RUN_ID} --endpoint ${APP_NAME}-app -f ./ai/cloud/deploy/deployment.yml --set model=$MODEL_REF
+        
+        # move scoring script to deployment folder
+        cp ./ai/score.py ./ai/cloud/deploy/score.py
+        
+        # create deployment
+        az ml online-deployment create --name ${APP_NAME}-${GITHUB_RUN_ID} --endpoint ${APP_NAME}-app -f ./ai/cloud/deploy/deployment.yml
 
         # if PROD does not exist, mark this as prod and exit
         PROD_DEPLOYMENT=$(az ml online-endpoint show -n ${APP_NAME}-app -o tsv --query "tags.PROD_DEPLOYMENT")
