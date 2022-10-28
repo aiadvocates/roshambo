@@ -18,8 +18,8 @@ class RoshamboModel(pl.LightningModule):
         self.save_hyperparameters()
         self.classes = classes
         self.lr = lr
-        self.model_type = "resnet18"
-        self.xfer = models.resnet18(pretrained=True)
+        self.model_type = "resnet34"
+        self.xfer = models.resnet34(pretrained=True)
         self.fc1 = nn.Linear(1000, classes)
 
         self.param_size = 0
