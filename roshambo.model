@@ -1,1 +1,11 @@
-modelfile
+{
+  "runtime": "https://ghrt-app-prod-3pqjhgdpctklbiec.proudbush-c7568808.westus.azurecontainerapps.io/",
+  "api": "chat",
+  "type": "multiturn",
+  "ui": {
+    "panel" :{
+      "text": "your question / comment",
+      "label": "response"
+    }
+  }
+}
